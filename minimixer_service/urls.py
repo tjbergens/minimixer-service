@@ -34,4 +34,6 @@ urlpatterns = [
     url(r'^api-token-auth/', 'rest_framework.authtoken.views.obtain_auth_token'),
     url(r'^tempurature/', 'minimixer_manager.views.get_temp'),
     url(r'^order/$', views.OrderManager.as_view()),
+    url(r'^neworder/', views.NewOrder.as_view()),
+    url(r'getorder', views.GetOrder.as_view())
 ]

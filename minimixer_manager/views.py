@@ -111,7 +111,27 @@ def get_temp(request):
     content = {'tempurature': temp}
     return Response(content)
 
-# Order a drink.
+class GetOrder(APIView):
+    def get(self, request, format=None):
+
+        return Response(Recipe.objects.get(pk=request.GET.get('pk')))
+
+# Order a drink given a recipe.
+class NewOrder(GenericAPIView):
+
+    def get_serializer_class(self):
+        return RecipeInstructionSerializer
+
+    # Just returns the specified order object in JSON.
+    def get(self, request, format=None):
+        order = RecipeSerializer(Recipe.objects.get(pk=request.GET.get('id')))
+        return Response(serializer.data)
+
+    def post(self, request, format=None):
+        order = RecipeSerializer(Recipe.objects.get(pk=request.GET.get('id')))
+
+
+# Manually order a drink.
 class OrderManager(GenericAPIView):
     def get(self, request, format=None):
         return Response(request.data)
