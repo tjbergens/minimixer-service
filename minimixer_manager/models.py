@@ -6,13 +6,17 @@ from django.db import models
 class Drink(models.Model):
     name = models.CharField(max_length=100, blank=True, default='')
     description = models.CharField(max_length=100, blank=True, default='')
-    total_available = models.IntegerField()
+    total_available = models.DecimalField(decimal_places=1, max_digits=4)
+
+    # Pump letter designation if the drink is loaded.
+    in_pump = models.CharField(max_length=1, blank=True, default='')
 
 # Represents an ingredient for a particular recipe.
 class Ingredient(models.Model):
     recipe = models.ForeignKey('Recipe', related_name='ingredients')
+    drink = models.ForeignKey('Drink', related_name='ingredients')
     name = models.CharField(max_length=100, blank=True, default='')
-    quantity = models.IntegerField()
+    quantity = models.DecimalField(decimal_places=1, max_digits=2)
 
 # Recipe model definition for SQL schema creation.
 class Recipe(models.Model):

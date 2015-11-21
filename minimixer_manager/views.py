@@ -93,7 +93,7 @@ def create_auth(request):
     if serialized.is_valid():
         User.objects.create_user(
             serialized.init_data['username'],
-            serialized.init_data['email'],
+            #serialized.init_data['email'],
             serialized.init_data['password']
         )
         return Response(status=status.HTTP_201_CREATED)

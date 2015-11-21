@@ -7,7 +7,7 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ('username', 'email', 'password')
+        fields = ('username', 'password')
 
 # Serializer used to turn Main User account authentication requests into Python datatypes
 class UserAuthSerializer(serializers.ModelSerializer):
@@ -42,13 +42,14 @@ class RecipeSerializer(serializers.ModelSerializer):
 
 # Serializer used for the possible recipe ingredients.
 class DrinkSerializer(serializers.ModelSerializer):
-
+    # Associated recipe ingredients with this drink.
+    ingredients = IngredientSerializer(many=True, read_only=True)
     class Meta:
         model = Drink
-        fields = ('name', 'description', 'total_available')
+        #fields = ('name', 'description', 'total_available')
 
 
-
+# Defines the data for an instruction to give to the uc.
 class RecipeInstructionSerializer(serializers.ModelSerializer):
     class Meta:
         model = RecipeInstruction
