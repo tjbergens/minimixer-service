@@ -4,8 +4,8 @@ from django.contrib.auth.models import User
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import status
-from minimixer_manager.serializers import UserSerializer, RecipeSerializer, RecipeInstructionSerializer
-from minimixer_manager.models import Recipe, RecipeIngredient, Ingredient
+from minimixer_manager.serializers import UserSerializer, RecipeSerializer, RecipeInstructionSerializer, IngredientSerializer, DrinkSerializer
+from minimixer_manager.models import Recipe, Drink, Ingredient
 from minimixer_manager.permissions import IsOwner
 from rest_framework.decorators import api_view
 from rest_framework import viewsets
@@ -35,6 +35,37 @@ class RecipeViewSet(viewsets.ModelViewSet):
     # Define the queryset to be provided for the authenticated user to act on
     def get_queryset(self):
         return self.request.user.recipe_set.all()
+
+# Model Viewset for Recipe-specific IngredientViewSet
+class DrinkViewSet(viewsets.ModelViewSet):
+
+    # Define the queryset to act on for the recipe models
+    queryset = Drink.objects.all()
+
+    # Define the serializer used to serialize/de-serialize the data
+    serializer_class = DrinkSerializer
+
+    # Define the permissions required for Account view requests to be provided
+    permission_classes = (IsAuthenticated,)
+
+    # Define the queryset to be provided for the authenticated user to act on
+    #def get_queryset(self):
+    #    return self.request.user.recipe_set.all()
+
+# Model Viewset for the recipe model. Allows
+class IngredientViewSet(viewsets.ModelViewSet):
+
+    # Define the queryset to act on for the recipe models
+    queryset = Ingredient.objects.all()
+
+    # Define the serializer used to serialize/de-serialize the data
+    serializer_class = IngredientSerializer
+
+    # Define the permissions required for Account view requests to be provided
+    permission_classes = (IsAuthenticated,)
+
+    #def perform_create(self, serializer):
+    #    serializer.save()
 
 # Modell Viewset for the User model.
 class UserViewSet(viewsets.ModelViewSet):
@@ -107,39 +138,40 @@ class OrderManager(GenericAPIView):
 
                 #UART.setup("UART1")
                 ser = serial.Serial(port = "/dev/ttyO1", baudrate=9600)
-                ser.close()
-                ser.open()
-                print "Response" + ser.read(10)
+                #ser.close()
+                #ser.open()
+                print "Response" + ser.read(ser.inWaiting())
                 ser.write("R")
-                print "Response " + ser.read(10)
+                time.sleep(1)
+                print "Response " + ser.read(ser.inWaiting())
                 ser.write(str(num_parallel))
-                print "Response " + ser.read(10)
+                print "Response " + ser.read(ser.inWaiting())
                 ser.write("0")
-                print "Response " + ser.read(10)
+                print "Response " + ser.read(ser.inWaiting())
                 ser.write("A")
-                print "Response " + ser.read(10)
+                print "Response " + ser.read(ser.inWaiting())
                 ser.write(str(pump_a))
-                print "Response " + ser.read(10)
+                print "Response " + ser.read(ser.inWaiting())
                 ser.write("B")
-                print "Response " + ser.read(10)
+                print "Response " + ser.read(ser.inWaiting())
                 ser.write(str(pump_b))
-                print "Response " + ser.read(10)
+                print "Response " + ser.read(ser.inWaiting())
                 ser.write("C")
-                print "Response " + ser.read(10)
+                print "Response " + ser.read(ser.inWaiting())
                 ser.write(str(pump_c))
-                print "Response " + ser.read(10)
+                print "Response " + ser.read(ser.inWaiting())
                 ser.write("D")
-                print "Response " + ser.read(10)
+                print "Response " + ser.read(ser.inWaiting())
                 ser.write(str(pump_d))
-                print "Response " + ser.read(10)
+                print "Response " + ser.read(ser.inWaiting())
                 ser.write("E")
-                print "Response " + ser.read(10)
+                print "Response " + ser.read(ser.inWaiting())
                 ser.write(str(pump_e))
-                print "Response " + ser.read(10)
+                print "Response " + ser.read(ser.inWaiting())
                 ser.write("F")
-                print "Response " + ser.read(10)
+                print "Response " + ser.read(ser.inWaiting())
                 ser.write(str(pump_f))
-                print "Response " + ser.read(10)
+                print "Response " + ser.read(ser.inWaiting())
                 print "got here"
 
                 return Response(serializer.data, status=201)
