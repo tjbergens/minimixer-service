@@ -33,6 +33,8 @@ urlpatterns = [
     url(r'^users/register', 'minimixer_manager.views.create_auth'),
     url(r'^api-token-auth/', 'rest_framework.authtoken.views.obtain_auth_token'),
     url(r'^tempurature/', 'minimixer_manager.views.get_temp'),
+    url(r'^startled/', 'minimixer_manager.views.start_led'),
+    url(r'^stopled/', 'minimixer_manager.views.stop_led'),
     url(r'^order/$', views.OrderManager.as_view()),
     url(r'^neworder/', views.NewOrder.as_view()),
     url(r'getorder', views.GetOrder.as_view())

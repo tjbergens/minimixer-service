@@ -14,6 +14,7 @@ from rest_framework.generics import GenericAPIView
 import serial
 import Adafruit_BBIO.UART as UART
 import time
+import Adafruit_BBIO.PWM as PWM
 
 # Create your views here.
 
@@ -110,6 +111,24 @@ def get_temp(request):
     temp = str(float(raw.split("t=")[-1])/1000*9/5+32)
     content = {'tempurature': temp}
     return Response(content)
+
+@api_view(['GET'])
+@csrf_exempt
+def start_led(request):
+
+    PWM.start("P8_13", 100)
+    PWM.start("P8_19", 100)
+    PWM.start("P9_14", 100)
+    return Response(200)
+
+@api_view(['GET'])
+@csrf_exempt
+def stop_led(request):
+
+    PWM.stop("P8_13")
+    PWM.stop("P8_19")
+    PWM.stop("P9_14")
+    return Response(200)
 
 class GetOrder(APIView):
     def get(self, request, format=None):
