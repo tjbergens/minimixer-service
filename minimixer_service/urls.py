@@ -25,6 +25,7 @@ router.register(r'recipes', views.RecipeViewSet)
 router.register(r'drinks', views.DrinkViewSet)
 router.register(r'users', views.UserViewSet)
 router.register(r'ingredients', views.IngredientViewSet)
+router.register(r'neworder', views.NewOrderViewSet)
 
 urlpatterns = [
     url(r'^admin/', include(admin.site.urls)),
@@ -36,6 +37,6 @@ urlpatterns = [
     url(r'^startled/', 'minimixer_manager.views.start_led'),
     url(r'^stopled/', 'minimixer_manager.views.stop_led'),
     url(r'^order/$', views.OrderManager.as_view()),
-    url(r'^neworder/', views.NewOrder.as_view()),
-    url(r'getorder', views.GetOrder.as_view())
+    #url(r'^neworder/', views.NewOrder.as_view()),
+    #url(r'getorder', views.GetOrder.as_view())
 ]

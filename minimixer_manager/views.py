@@ -15,6 +15,8 @@ import serial
 import Adafruit_BBIO.UART as UART
 import time
 import Adafruit_BBIO.PWM as PWM
+from rest_framework.decorators import detail_route
+from django.db.models import F
 
 # Create your views here.
 
@@ -130,24 +132,61 @@ def stop_led(request):
     PWM.stop("P9_14")
     return Response(200)
 
-class GetOrder(APIView):
-    def get(self, request, format=None):
-
-        return Response(Recipe.objects.get(pk=request.GET.get('pk')))
-
 # Order a drink given a recipe.
-class NewOrder(GenericAPIView):
+class NewOrderViewSet(viewsets.ModelViewSet):
 
-    def get_serializer_class(self):
-        return RecipeInstructionSerializer
+    serializer_class = RecipeSerializer
+
+    # Filter our queryset by recipes that only have all drinks loaded into the machine.
+    queryset = Recipe.objects.exclude(
+        ingredients__drink__in_pump__isnull=True
+    )
 
     # Just returns the specified order object in JSON.
-    def get(self, request, format=None):
-        order = RecipeSerializer(Recipe.objects.get(pk=request.GET.get('id')))
-        return Response(serializer.data)
+    #def get(self, request, format=None):
+    #    order = RecipeSerializer(Recipe.objects.get(pk=request.GET.get('id')))
+    #    return Response(order.data)
 
-    def post(self, request, format=None):
-        order = RecipeSerializer(Recipe.objects.get(pk=request.GET.get('id')))
+    @detail_route(methods=['put'])
+    def order_drink(self, request, pk=None):
+         recipe = self.get_object()
+         recipe.num_ordered=F('num_ordered')+1
+         recipe.save(update_fields=['num_ordered'])
+         print "blah"
+
+         ingredients = Ingredient.objects.filter(recipe=recipe.id)
+         print "got here"
+         num_parallel = ingredients.count()
+         print num_parallel
+         ser = serial.Serial(port = "/dev/ttyO1", baudrate=9600)
+
+         print "Response" + ser.read(ser.inWaiting())
+         ser.write("R")
+         time.sleep(0.1)
+         print "Response " + ser.read(ser.inWaiting())
+
+         ser.write(str(num_parallel))
+         time.sleep(0.1)
+         print "Response " + ser.read(ser.inWaiting())
+
+         ser.write("0")
+         time.sleep(0.1)
+         print "Response " + ser.read(ser.inWaiting())
+
+         # Order our recipe.
+         for ingredient in ingredients:
+            ser.write(str(ingredient.drink.in_pump))
+            print str(ingredient.drink.in_pump)
+            time.sleep(0.1)
+            print "Response " + ser.read(ser.inWaiting())
+
+            ser.write(str(ingredient.quantity))
+            print str(ingredient.quantity)
+            time.sleep(0.1)
+            print "Response " + ser.read(ser.inWaiting())
+
+         return Response({'status': 'ordered'})
+
 
 
 # Manually order a drink.
