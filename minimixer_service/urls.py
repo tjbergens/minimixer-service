@@ -21,11 +21,12 @@ from minimixer_manager import views
 
 # Register URL routers for viewsets.
 router = DefaultRouter()
-router.register(r'recipes', views.RecipeViewSet)
+router.register(r'neworder', views.NewOrderViewSet)
+router.register(r'recipes', views.AllRecipeViewSet)
+router.register(r'myrecipes', views.MyRecipeViewSet)
 router.register(r'drinks', views.DrinkViewSet)
 router.register(r'users', views.UserViewSet)
 router.register(r'ingredients', views.IngredientViewSet)
-router.register(r'neworder', views.NewOrderViewSet)
 
 urlpatterns = [
     url(r'^admin/', include(admin.site.urls)),

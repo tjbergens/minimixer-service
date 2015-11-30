@@ -21,7 +21,22 @@ from django.db.models import F
 # Create your views here.
 
 # Model Viewset for the recipe model. Allows
-class RecipeViewSet(viewsets.ModelViewSet):
+class AllRecipeViewSet(viewsets.ModelViewSet):
+
+    # Define the queryset to act on for the recipe models
+    queryset = Recipe.objects.all()
+
+    # Define the serializer used to serialize/de-serialize the data
+    serializer_class = RecipeSerializer
+
+    # Define the permissions required for Account view requests to be provided
+    permission_classes = (IsAuthenticated,)
+
+    def perform_create(self, serializer):
+        serializer.save(owner=self.request.user)
+
+# Model Viewset for the recipe model. Allows
+class MyRecipeViewSet(viewsets.ModelViewSet):
 
     # Define the queryset to act on for the recipe models
     queryset = Recipe.objects.all()
@@ -155,6 +170,7 @@ class NewOrderViewSet(viewsets.ModelViewSet):
          print "blah"
 
          ingredients = Ingredient.objects.filter(recipe=recipe.id)
+
          print "got here"
          num_parallel = ingredients.count()
          print num_parallel
@@ -181,6 +197,13 @@ class NewOrderViewSet(viewsets.ModelViewSet):
             print "Response " + ser.read(ser.inWaiting())
 
             ser.write(str(ingredient.quantity))
+
+            drink = ingredient.drink
+            print "Ingredient old total" + str(drink.total_available)
+            drink.total_available = drink.total_available - ingredient.quantity
+            drink.save(update_fields=['total_available'])
+            print "Ingredient new total" + str(drink.total_available)
+
             print str(ingredient.quantity)
             time.sleep(0.1)
             print "Response " + ser.read(ser.inWaiting())
