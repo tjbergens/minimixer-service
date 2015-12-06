@@ -5,9 +5,16 @@ from minimixer_manager.models import Recipe, Drink, Ingredient, RecipeInstructio
 # Serializer used to turn Main User account JSON requests into Python datatypes
 class UserSerializer(serializers.ModelSerializer):
 
+    def create(self, validated_data):
+        user = User.objects.create_user(**validated_data)
+        #user.save()
+        return user
+
     class Meta:
         model = User
         fields = ('username', 'password')
+
+
 
 # Serializer used to turn Main User account authentication requests into Python datatypes
 class UserAuthSerializer(serializers.ModelSerializer):

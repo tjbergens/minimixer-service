@@ -25,6 +25,7 @@ router.register(r'neworder', views.NewOrderViewSet)
 router.register(r'recipes', views.AllRecipeViewSet)
 router.register(r'myrecipes', views.MyRecipeViewSet)
 router.register(r'drinks', views.DrinkViewSet)
+router.register(r'loaded_drinks', views.LoadedDrinkViewSet)
 router.register(r'users', views.UserViewSet)
 router.register(r'ingredients', views.IngredientViewSet)
 
@@ -32,10 +33,11 @@ urlpatterns = [
     url(r'^admin/', include(admin.site.urls)),
     url(r'^', include(router.urls)),
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
-    url(r'^users/register', 'minimixer_manager.views.create_auth'),
+    #url(r'^users/register', 'minimixer_manager.views.create_auth'),
     url(r'^api-token-auth/', 'rest_framework.authtoken.views.obtain_auth_token'),
     url(r'^tempurature/', 'minimixer_manager.views.get_temp'),
     url(r'^startled/', 'minimixer_manager.views.start_led'),
+    url(r'^startlcd/', 'minimixer_manager.views.start_lcd'),
     url(r'^stopled/', 'minimixer_manager.views.stop_led'),
     url(r'^order/$', views.OrderManager.as_view()),
     #url(r'^neworder/', views.NewOrder.as_view()),

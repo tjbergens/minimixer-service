@@ -62,7 +62,7 @@ REST_FRAMEWORK = {
         'rest_framework.parsers.JSONParser',
         'rest_framework.parsers.FormParser',
         'rest_framework.parsers.MultiPartParser',
-    )
+    ),
 }
 
 ROOT_URLCONF = 'minimixer_service.urls'

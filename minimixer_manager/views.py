@@ -17,6 +17,7 @@ import time
 import Adafruit_BBIO.PWM as PWM
 from rest_framework.decorators import detail_route
 from django.db.models import F
+import lcd
 
 # Create your views here.
 
@@ -70,6 +71,37 @@ class DrinkViewSet(viewsets.ModelViewSet):
     #def get_queryset(self):
     #    return self.request.user.recipe_set.all()
 
+# Model Viewset for Recipe-specific IngredientViewSet
+class LoadedDrinkViewSet(viewsets.ModelViewSet):
+
+    # Define the serializer used to serialize/de-serialize the data
+    serializer_class = DrinkSerializer
+
+    # Filter our queryset by recipes that only have all drinks loaded into the machine.
+    queryset = Drink.objects.exclude(
+        in_pump=""
+    ).order_by('in_pump')
+
+    # Define the permissions required for Account view requests to be provided
+    permission_classes = (IsAuthenticated,)
+
+    # Define the queryset to be provided for the authenticated user to act on
+    #def get_queryset(self):
+    #    return self.request.user.recipe_set.all()
+
+    @detail_route(methods=['put'])
+    def load_drink(self, request, pk=None):
+         drink = self.get_object()
+
+         current_loaded_drink = Drink.objects.filter(in_pump=drink.in_pump)
+
+         if current_loaded_drink:
+             current_loaded_drink.in_pump = null
+             current_loaded_drink.save(update_fields=['in_pump'])
+
+         drink.save(update_fields=['in_pump'])
+
+
 # Model Viewset for the recipe model. Allows
 class IngredientViewSet(viewsets.ModelViewSet):
 
@@ -92,7 +124,7 @@ class UserViewSet(viewsets.ModelViewSet):
     serializer_class = UserSerializer
 
     # All requests to the user view must be authenticated
-    permission_classes = [IsAuthenticated]
+    #permission_classes = [IsAuthenticated]
 
     # The queryset to act on will be all user object of the requested user.
     queryset = User.objects.all()
@@ -101,23 +133,25 @@ class UserViewSet(viewsets.ModelViewSet):
 
 
 # Define the POST view to create a new main user account
-@api_view(['POST'])
+#@api_view(['POST'])
 # Exempt csrf tokens in the headers as they are not needed for this request
-@csrf_exempt
-def create_auth(request):
+#@csrf_exempt
+#def create_auth(self, request, format=None):
 
     # User serializer for the incoming create account request
-    serialized = UserSerializer(data=request.DATA)
-    if serialized.is_valid():
-        User.objects.create_user(
-            serialized.init_data['username'],
-            #serialized.init_data['email'],
-            serialized.init_data['password']
-        )
-        return Response(status=status.HTTP_201_CREATED)
-    else:
+    #serialized = UserSerializer(data=request.data)
+    #print "Got here"
+    #print request.data.get('username')
+    #print request.data.get('password')
+    #    User.objects.create_user(
+    #        serialized.init_data['username'],
+    #        "",
+    #        serialized.init_data['password']
+    #    )
+    #    return Response(status=status.HTTP_201_CREATED)
+    #else:
         # User account already exists.
-        return Response(serialized._errors, status=status.HTTP_400_BAD_REQUEST)
+    #    return Response(serialized._errors, status=status.HTTP_400_BAD_REQUEST)
 
 # Tempurature status check
 @api_view(['GET'])
@@ -138,6 +172,16 @@ def start_led(request):
     PWM.start("P9_14", 100)
     return Response(200)
 
+
+@api_view(['GET'])
+@csrf_exempt
+def start_lcd(request):
+
+    screen = lcd.Screen(bit_mode=4, cursor_status='off')
+    screen.clear()
+    screen.printLine('test', 1)
+    return Response(200)
+
 @api_view(['GET'])
 @csrf_exempt
 def stop_led(request):
@@ -154,8 +198,9 @@ class NewOrderViewSet(viewsets.ModelViewSet):
 
     # Filter our queryset by recipes that only have all drinks loaded into the machine.
     queryset = Recipe.objects.exclude(
-        ingredients__drink__in_pump__isnull=True
+        ingredients__drink__in_pump=""
     )
+
 
     # Just returns the specified order object in JSON.
     #def get(self, request, format=None):

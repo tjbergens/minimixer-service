@@ -9,7 +9,7 @@ class Drink(models.Model):
     total_available = models.DecimalField(decimal_places=1, max_digits=4, blank=True)
 
     # Pump letter designation if the drink is loaded.
-    in_pump = models.CharField(max_length=1, null=True)
+    in_pump = models.CharField(max_length=1, blank=True, default='')
 
 # Represents an ingredient for a particular recipe.
 class Ingredient(models.Model):
